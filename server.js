@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
+const cron = require('node-cron');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -21,11 +22,24 @@ if (fs.existsSync(dataFile)) {
     data = JSON.parse(rawData);
 }
 
+// Function to save data to file
+function saveData() {
+    fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+}
+
+// Schedule a task to run at midnight
+cron.schedule('0 0 * * *', () => {
+    console.log('Running task at midnight');
+    data.toggleb = false;
+    data.togglem = false;
+    saveData();
+});
+
 // Save state to server
 app.post('/save', (req, res) => {
     const { id, value } = req.body;
     data[id] = value;
-    fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+    saveData();
     res.send({ status: 'success' });
 });
 
