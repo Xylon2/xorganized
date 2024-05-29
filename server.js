@@ -2,11 +2,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
+const dotenv = require('dotenv');
+
+// Load environment variables from .env file
+dotenv.config();
+
 const app = express();
 
 app.use(bodyParser.json());
 
-const dataFile = 'data.json';
+// Get the data file path from the environment variable
+const dataFile = process.env.DATA_FILE_PATH || 'data.json';
 
 // Load data from file
 let data = {};
